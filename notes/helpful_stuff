@@ -1,0 +1,7 @@
+curl https://ipinfo.io/ip
+
+
+
+
+sudo nmap -sP <ip>
+
