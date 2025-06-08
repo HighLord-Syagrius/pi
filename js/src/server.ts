@@ -47,16 +47,14 @@ server.on('connection', (ws) => {
 });
 
 // Start FFmpeg to grab frames
-const ffmpeg = spawn('ffmpeg', [
-    '-f', 'video4linux2', // Change for your OS
-		'-input_format', 'yuyv422',
-    '-i', '/dev/video0',
-    '-f', 'image2pipe',
-    '-vf', 'scale=640:480',
-    '-q:v', '5',
-    '-update', '1',
-    '-vcodec', 'yuyv422',
-    'pipe:1'
+const ffmpeg = spawn('libcamera-vid', [
+    '-t', '0',
+		'--codec', 'mjpeg',
+    '--width', '640',
+		'--height', '480',
+		'--nopreview',
+		'--framerate', '15',
+		'-o', '-'
 ]);
 
 ffmpeg.stdout.on('data', (chunk) => {
