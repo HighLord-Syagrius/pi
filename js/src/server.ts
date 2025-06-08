@@ -66,12 +66,12 @@ ffmpeg.stdout.on('data', (chunk) => {
 
 ffmpeg.stderr.on('data', (data) => {
     // Uncomment to debug FFmpeg logs
-     console.error(`FFmpeg stderr: ${data}`);
+     console.error(`stderr:\n${data}`);
 });
 
 ffmpeg.on('exit', (code) => {
 		//clients.forEach(c => c.end());
-    console.log(`FFmpeg exited with code ${code}`);
+    console.log(`exited with code ${code}`);
 });
 
 server.listen(3000, () => {
