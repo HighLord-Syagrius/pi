@@ -44,18 +44,21 @@ exports.server.on('connection', (ws) => {
         console.log('Client disconnected');
     });
 });
+const FPS = 10; // Frames per second
 // Start FFmpeg to grab frames
 const ffmpeg = (0, child_process_1.spawn)('libcamera-vid', [
     '-t', '0',
-    '--codec', 'mjpeg',
+    '--codec', 'yuv420',
     '--width', '640',
     '--height', '480',
     '--nopreview',
-    '--framerate', '15',
+    '--framerate', `${FPS}`,
     '-o', '-'
 ]);
+const counter = { value: 0 };
 ffmpeg.stdout.on('data', (chunk) => {
-    console.log(`Received ${chunk.length} bytes of data`);
+    counter.value == 0 && console.log(`Received ${chunk.length} bytes of data`);
+    counter.value = (counter.value + 1) % FPS; // Log every 10th frame
     for (const client of clients) {
         client.write(chunk);
     }
@@ -68,6 +71,6 @@ ffmpeg.on('exit', (code) => {
     //clients.forEach(c => c.end());
     console.log(`exited with code ${code}`);
 });
-exports.server.listen(3000, () => {
+exports.server.listen(3000, "0.0.0.0", () => {
     console.log(' WebSocket MJPEG stream running at http://localhost:3000');
 });
