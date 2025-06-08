@@ -37,11 +37,12 @@ app.get('/', (req, res) => {
 // WebSocket clients
 server.on('connection', (ws) => {
     clients.push(ws);
-    console.log('🎥 Client connected');
+    console.log('Client connected');
 
     ws.on('close', () => {
-        clients = clients.filter(c => c !== ws); // yeah this is crap
-        console.log('👋 Client disconnected');
+				console.log(clients.length, 'clients connected');
+        //clients = clients.filter(c => c !== ws); // yeah this is crap
+        console.log('Client disconnected');
     });
 });
 
@@ -58,15 +59,16 @@ const ffmpeg = spawn('ffmpeg', [
 ]);
 
 ffmpeg.stdout.on('data', (chunk) => {
+	console.log(`Received ${chunk.length} bytes of data`);
     for (const client of clients) {
 			client.write(chunk);
     }
 });
 
-// ffmpeg.stderr.on('data', (data) => {
-//     // Uncomment to debug FFmpeg logs
-//     // console.error(`FFmpeg stderr: ${data}`);
-// });
+ffmpeg.stderr.on('data', (data) => {
+    // Uncomment to debug FFmpeg logs
+    // console.error(`FFmpeg stderr: ${data}`);
+});
 
 ffmpeg.on('exit', (code) => {
 		clients.forEach(c => c.end());
@@ -74,5 +76,5 @@ ffmpeg.on('exit', (code) => {
 });
 
 server.listen(3000, () => {
-    console.log('🚀 WebSocket MJPEG stream running at http://localhost:3000');
+    console.log(' WebSocket MJPEG stream running at http://localhost:3000');
 });
