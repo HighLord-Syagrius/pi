@@ -49,12 +49,13 @@ server.on('connection', (ws) => {
 // Start FFmpeg to grab frames
 const ffmpeg = spawn('ffmpeg', [
     '-f', 'video4linux2', // Change for your OS
+		'-input_format', 'yuyv422',
     '-i', '/dev/video0',
     '-f', 'image2pipe',
     '-vf', 'scale=640:480',
     '-q:v', '5',
     '-update', '1',
-    '-vcodec', 'mjpeg',
+    '-vcodec', 'yuyv422',
     'pipe:1'
 ]);
 
@@ -67,7 +68,7 @@ ffmpeg.stdout.on('data', (chunk) => {
 
 ffmpeg.stderr.on('data', (data) => {
     // Uncomment to debug FFmpeg logs
-    // console.error(`FFmpeg stderr: ${data}`);
+     console.error(`FFmpeg stderr: ${data}`);
 });
 
 ffmpeg.on('exit', (code) => {
