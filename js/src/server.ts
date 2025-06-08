@@ -71,7 +71,7 @@ ffmpeg.stderr.on('data', (data) => {
 });
 
 ffmpeg.on('exit', (code) => {
-		clients.forEach(c => c.end());
+		//clients.forEach(c => c.end());
     console.log(`FFmpeg exited with code ${code}`);
 });
 
