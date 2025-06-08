@@ -77,6 +77,6 @@ ffmpeg.on('exit', (code) => {
     console.log(`exited with code ${code}`);
 });
 
-server.listen(3000, "0.0.0.0", () => {
+server.listen(3000, () => {
     console.log(' WebSocket MJPEG stream running at http://localhost:3000');
 });
