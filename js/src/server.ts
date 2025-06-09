@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
                 const ws = new WebSocket('ws://' + location.host);
                 ws.onmessage = (msg) => {
 										console.log('Received message', msg.data);
-										img.src = URL.createObjectURL(msg.data);
+										img.src = URL.createObjectURL(new Blob([msg.data], { type: 'image/jpeg' }));
                 };
             </script>
         </body>
