@@ -25,14 +25,7 @@ app.get('/', (req, res) => {
 								let lastURL = null;
                 ws.onmessage = (msg) => {
 										//console.log('Received message', msg.data);
-										const url = URL.createObjectURL( new Blob([msg.data], { type: 'image/jpeg' }));
-										img.onload = () => {
-											if (lastUrl) {
-												URL.revokeObjectURL(lastUrl);
-											}
-											lastUrl = url;
-										};
-    								img.src = url;
+										img.src = 'data:image/yuv420;charset=utf-8;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(msg.data)));
                 };
             </script>
         </body>
