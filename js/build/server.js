@@ -48,7 +48,7 @@ wss.on('connection', (ws) => {
         console.log('Client disconnected');
     });
 });
-const FPS = 10; // Frames per second
+const FPS = 2; // Frames per second
 const libCameraVid = (0, child_process_1.spawn)('libcamera-vid', [
     '-t', '0',
     '--codec', 'yuv420',
@@ -63,11 +63,7 @@ libCameraVid.stdout.on('data', (chunk) => {
     counter.value == 0 && console.log(`Received ${chunk.length} bytes of data`);
     counter.value = (counter.value + 1) % FPS; // Log every 10th frame
     for (const client of clients) {
-        client.send(chunk, { binary: true }, (err) => {
-            if (err) {
-                console.error('Error sending data to client:', err);
-            }
-        });
+        client.send(chunk);
     }
 });
 libCameraVid.stderr.on('data', (data) => {
