@@ -25,9 +25,17 @@ app.get('/', (req, res) => {
             <script>
                 const img = document.getElementById('stream');
                 const ws = new WebSocket('ws://' + location.host);
+								let lastURL = null;
                 ws.onmessage = (msg) => {
 										//console.log('Received message', msg.data);
-										img.src = URL.createObjectURL( new Blob([msg.data], { type: 'image/jpeg' }));
+										const url = URL.createObjectURL( new Blob([msg.data], { type: 'image/jpeg' }));
+										img.onload = () => {
+											if (lastUrl) {
+												URL.revokeObjectURL(lastUrl);
+											}
+											lastUrl = url;
+										};
+    								img.src = url;
                 };
             </script>
         </body>
