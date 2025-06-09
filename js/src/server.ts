@@ -22,10 +22,16 @@ app.get('/', (req, res) => {
             <script>
                 const img = document.getElementById('stream');
                 const ws = new WebSocket('ws://' + location.host);
-								let lastURL = null;
+								let lastUrl = null;
+                
                 ws.onmessage = (msg) => {
-										//console.log('Received message', msg.data);
-										img.src = 'data:image/yuv420;charset=utf-8;base64,' + btoa(msg.data);
+                    const blob = new Blob([msg.data], { type: 'image/jpeg' });
+										if (lastUrl) {
+											URL.revokeObjectURL(lastUrl); // Free memory
+										}
+										lastUrl = URL.createObjectURL(blob);
+										console.log('Received frame', lastUrl);
+										img.src = lastUrl;
                 };
             </script>
         </body>
