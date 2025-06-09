@@ -21,16 +21,18 @@ app.get('/', (req, res) => {
         <body>
             <h1>WebSocket Video Stream</h1>
             <canvas id="canvas" width="640" height="480"></canvas>
+						 <img id="stream" alt="Waiting for stream..." />
             <script>
-                const canvas = document.getElementById('canvas');
+                const img = document.getElementById('stream');
                 const ctx = canvas.getContext('2d');
                 const ws = new WebSocket('ws://' + location.host);
-
-                let img = new Image();
-                img.onload = () => ctx.drawImage(img, 0, 0);
+								let lastUrl = null;
                 
                 ws.onmessage = (msg) => {
                     const blob = new Blob([msg.data], { type: 'image/jpeg' });
+										if (lastUrl) {
+											URL.revokeObjectURL(lastUrl); // Free memory
+										}
                     img.src = URL.createObjectURL(blob);
                 };
             </script>
