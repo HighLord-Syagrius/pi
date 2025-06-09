@@ -29,7 +29,9 @@ app.get('/', (req, res) => {
 										if (lastUrl) {
 											URL.revokeObjectURL(lastUrl); // Free memory
 										}
-                    img.src = URL.createObjectURL(blob);
+										lastUrl = URL.createObjectURL(blob);
+										console.log('Received frame', lastUrl);
+										img.src = lastUrl;
                 };
             </script>
         </body>
