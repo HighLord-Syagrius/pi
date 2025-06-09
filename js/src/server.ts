@@ -18,10 +18,9 @@ app.get('/', (req, res) => {
         <body>
             <h1>WebSocket Video Stream</h1>
             <canvas id="canvas" width="640" height="480"></canvas>
-						 <img id="stream" alt="Waiting for stream..." />
+						 <img id="stream" width="640" height="480">
             <script>
                 const img = document.getElementById('stream');
-                const ctx = canvas.getContext('2d');
                 const ws = new WebSocket('ws://' + location.host);
 								let lastUrl = null;
                 
