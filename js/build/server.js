@@ -4,13 +4,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.server = void 0;
-const express_1 = __importDefault(require("express"));
 const child_process_1 = require("child_process");
+const express_1 = __importDefault(require("express"));
 const http_1 = __importDefault(require("http"));
+const ws_1 = __importDefault(require("ws"));
 const app = (0, express_1.default)();
 exports.server = http_1.default.createServer(app);
 let clients = [];
-// Serve the viewer page
+exports.server.listen(3000, () => {
+    console.log(' WebSocket MJPEG stream running at http://localhost:3000');
+});
+const wss = new ws_1.default.Server({ server: exports.server });
 app.get('/', (req, res) => {
     res.send(`
         <html>
@@ -35,7 +39,7 @@ app.get('/', (req, res) => {
     `);
 });
 // WebSocket clients
-exports.server.on('connection', (ws) => {
+wss.on('connection', (ws) => {
     clients.push(ws);
     console.log('Client connected');
     ws.on('close', () => {
@@ -45,8 +49,7 @@ exports.server.on('connection', (ws) => {
     });
 });
 const FPS = 10; // Frames per second
-// Start FFmpeg to grab frames
-const ffmpeg = (0, child_process_1.spawn)('libcamera-vid', [
+const libCameraVid = (0, child_process_1.spawn)('libcamera-vid', [
     '-t', '0',
     '--codec', 'yuv420',
     '--width', '640',
@@ -56,21 +59,25 @@ const ffmpeg = (0, child_process_1.spawn)('libcamera-vid', [
     '-o', '-'
 ]);
 const counter = { value: 0 };
-ffmpeg.stdout.on('data', (chunk) => {
+libCameraVid.stdout.on('data', (chunk) => {
     counter.value == 0 && console.log(`Received ${chunk.length} bytes of data`);
     counter.value = (counter.value + 1) % FPS; // Log every 10th frame
     for (const client of clients) {
-        client.write(chunk);
+        client.send(chunk, { binary: true }, (err) => {
+            if (err) {
+                console.error('Error sending data to client:', err);
+            }
+        });
     }
 });
-ffmpeg.stderr.on('data', (data) => {
+libCameraVid.stderr.on('data', (data) => {
     // Uncomment to debug FFmpeg logs
     console.error(`stderr:\n${data}`);
 });
-ffmpeg.on('exit', (code) => {
+libCameraVid.on('exit', (code) => {
     //clients.forEach(c => c.end());
     console.log(`exited with code ${code}`);
 });
-exports.server.listen(3000, () => {
-    console.log(' WebSocket MJPEG stream running at http://localhost:3000');
+libCameraVid.on('error', (err) => {
+    console.error('Failed to start libcamera-vid:', err);
 });
