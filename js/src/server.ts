@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 								let lastURL = null;
                 ws.onmessage = (msg) => {
 										//console.log('Received message', msg.data);
-										img.src = 'data:image/yuv420;charset=utf-8;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(msg.data)));
+										img.src = 'data:image/yuv420;charset=utf-8;base64,' + btoa(msg.data);
                 };
             </script>
         </body>
