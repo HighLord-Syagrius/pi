@@ -25,16 +25,8 @@ app.get('/', (req, res) => {
             <script>
                 const img = document.getElementById('stream');
                 const ws = new WebSocket('ws://' + location.host);
-								let lastUrl = null;
-                
                 ws.onmessage = (msg) => {
-                    const blob = new Blob([msg.data], { type: 'image/jpeg' });
-										if (lastUrl) {
-											URL.revokeObjectURL(lastUrl); // Free memory
-										}
-										lastUrl = URL.createObjectURL(blob);
-										console.log('Received frame', lastUrl);
-										img.src = lastUrl;
+										img.src = 'data:image/png;base64,' + msg.data;;
                 };
             </script>
         </body>
