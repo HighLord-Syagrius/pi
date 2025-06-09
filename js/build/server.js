@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
                 const img = document.getElementById('stream');
                 const ws = new WebSocket('ws://' + location.host);
                 ws.onmessage = (msg) => {
-										img.src = 'data:image/png;base64,' + btoa(msg.data);
+										img.src = URL.createObjectURL(new Blob([msg.data], { type: 'video/x-yuv' }));
                 };
             </script>
         </body>
